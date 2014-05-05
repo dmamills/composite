@@ -2,12 +2,9 @@
 namespace Composite;
 
 
-/*
-
-*/
 class Composite {
-	
-	public function __construct($base,$overlay,$outfile,$options = array()) 
+
+	public function __construct($base,$overlay,$outfile,$options = array())
 	{
 		$this->base = $base;
 		$this->overlay = $overlay;
@@ -24,20 +21,21 @@ class Composite {
 	{
 
 		if(!file_exists($this->overlay)) {
-			throw new Exception('Overlay image not found.');
+			throw new \Exception('Overlay image not found.');
 		}
 
 		if(!file_exists($this->base)) {
-			throw new Exception('Base image not found.');
-		}		
+			throw new \Exception('Base image not found.');
+		}
 
 		$results = array();
 		$command = Composite::prepareCommandString();
+		echo 'Executing command: '.$command;
 		exec($command,$results);
+
+
 		$this->executed = true;
-
 		//parse results for errors/success
-
 		return $results;
 	}
 
@@ -45,7 +43,7 @@ class Composite {
 	{
 		if(!file_exists($this->overlay))
 		{
-			throw new Exception('Overlay not found.');	
+			throw new \Exception('Overlay not found.');
 		}
 
 		return fopen($this->overlay,'r+');
@@ -59,12 +57,12 @@ class Composite {
 	*/
 	public function getOutFile($execute = false)
 	{
-		if($execute) 
+		if($execute)
 		{
 			$this->execute();
 		}
 
-		if(!$this->executed) throw new Exception('Composite not executed.');
+		if(!$this->executed) throw new \Exception('Composite not executed.');
 		$file = fopen($this->outfile,'r+');
 		return $file;
 	}
@@ -81,14 +79,13 @@ class Composite {
 		foreach($this->options as $key => $value)
 		{
 			if($value != null)
-				$command = $command.'-'.$key.' '.$value.' ';
+				$command .= '-'.$key.' '.$value.' ';
 			else
-				$command = $command.'-'.$key.' ';
+				$command .= '-'.$key.' ';
 		}
 
-		$command = $command.$this->overlay.' '.$this->base.' '.$this->outfile;
-		echo 'Executing command: '.$command;
+		$command .= $this->overlay.' '.$this->base.' '.$this->outfile;
 		return $command;
 	}
-	
+
 }
